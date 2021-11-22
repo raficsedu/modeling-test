@@ -1,0 +1,94 @@
+1. Optimize:
+The json object looks good to parse except the "FILTER" type. I have suggested the "FILTER" type as below.
+
+{
+    "nodes": [
+        {
+            "key": "A",
+            "type": "INPUT",
+            "transformObject": {
+                "tableName": "users",
+                "fields": [
+                    "id",
+                    "name",
+                    "age"
+                ]
+            }
+        },
+        {
+            "key": "B",
+            "type": "FILTER",
+            "transformObject": [
+                {
+                  "opration": "AND",
+                  "field": "age",
+                  "operator": ">",
+                  "value": 18
+                },
+                {
+                  "opration": "OR",
+                  "field": "name",
+                  "operator": "LIKE",
+                  "value": "Foo"
+                }
+              ]
+        },
+        {
+            "key": "C",
+            "type": "SORT",
+            "transformObject": [
+                {
+                    "target": "age",
+                    "order": "ASC"
+                },
+                {
+                    "target": "name",
+                    "order": "ASC"
+                }
+            ]
+        },
+        {
+            "key": "D",
+            "type": "TEXT_TRANSFORMATION",
+            "transformObject": [
+                {
+                    "column": "name",
+                    "transformation": "UPPER"
+                }
+            ]
+        },
+        {
+            "key": "E",
+            "type": "OUTPUT",
+            "transformObject": {
+                "limit": 100,
+                "offset": 0
+            }
+        }
+    ],
+    "edges": [
+        {
+            "from": "A",
+            "to": "B"
+        },
+        {
+            "from": "B",
+            "to": "C"
+        },
+        {
+            "from": "C",
+            "to": "D"
+        },
+        {
+            "from": "D",
+            "to": "E"
+        }
+    ]
+}
+
+2. Extendable:
+In my proposed solution (code) it can be easily expanded new type by mapping function name and write the business logic of that function. No need to change any other code.
+
+3. validation:
+First need to define the structure of the nodes. On finalization of node structure, we can write a validation method for each node. Making a generalized validation method will be difficult as the node structure is different based on type and in future structure can be changed.
+
